@@ -10,7 +10,22 @@ import (
 // buatlah endpoint Insert Data sesuai dengan Colection Postman
 func InsertData(c *fiber.Ctx) error {
 
-	//Tulis Jawaban Code di Sini :))
+	var data map[string]string
+
+	if err := c.BodyParser(&data); err != nil {
+		return err
+	}
+
+	user := models.User{
+		Nama: data["nama_user"],
+		Email: data["email_user"],
+		Username: data["username"],
+		Password: data["password_user"],
+	}
+
+	//untuk memasukan data kedalam database
+
+	database.DB.Create(&user)
 
 	return c.JSON(fiber.Map{
 		"Pesan": "Data telah berhasil di tambahkan",
@@ -20,7 +35,9 @@ func InsertData(c *fiber.Ctx) error {
 // Lengkapi Code Berikut untuk untuk Mengambil data untuk semua user - user
 func GetAllData(c *fiber.Ctx) error {
 
-	
+	var user []models.User
+	//mengambil semua data
+	database.DB.Find(&user)
 
 	return c.JSON(fiber.Map{
 		"data": user,
@@ -29,12 +46,15 @@ func GetAllData(c *fiber.Ctx) error {
 }
 
 //Lengkapi Code berikut Untuk Mengambil data dari id_user berdasarkan Parameter
-
 func GetUserByid(c *fiber.Ctx) error {
 
-
+	var user []models.User
+	//mengambil salah satu data
+	id_user := c.Params("id_user")
+	database.DB.Where("id_user = ?", id_user).Find(&user)
 
 	return c.JSON(fiber.Map{
+		"id_user": id_user,
 		"data": user,
 	})
 }
@@ -68,9 +88,10 @@ func Update(c *fiber.Ctx) error {
 	var user models.User
 
 	update := models.User{
-		Nama:     data["nama"],
-		Email:    data["email"],
-		Password: data["password"],
+		Nama:     data["nama_user"],
+		Email:    data["email_user"],
+		Username: data["username"],
+		Password: data["password_user"],
 	}
 	//mengambil database untuk di update
 
